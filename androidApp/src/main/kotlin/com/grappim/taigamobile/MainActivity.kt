@@ -44,9 +44,12 @@ class MainActivity : ComponentActivity() {
 
     private fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_VIEW) {
-            val code = intent.data?.getQueryParameter("code")
-            if (code != null) {
-                gitHubOAuthCallbackManager.onCallbackReceived(code)
+            val data = intent.data
+            if (data?.scheme == "taigamobile" && data.host == "github-callback") {
+                val code = data.getQueryParameter("code")
+                if (code != null) {
+                    gitHubOAuthCallbackManager.onCallbackReceived(code)
+                }
             }
         }
     }

@@ -92,6 +92,7 @@ class LoginViewModel(
     }
 
     private fun loginWithGitHub(server: String, code: String) {
+        pendingGitHubServer = null
         viewModelScope.launch {
             isLoading(true)
             _state.update { it.copy(error = NativeText.Empty) }
