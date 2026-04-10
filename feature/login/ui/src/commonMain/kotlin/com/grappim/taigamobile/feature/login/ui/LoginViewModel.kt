@@ -43,6 +43,8 @@ class LoginViewModel(
     private val _gitHubAuthUrl = Channel<String>()
     val gitHubAuthUrl = _gitHubAuthUrl.receiveAsFlow()
 
+    private var pendingGitHubServer: String? = null
+
     private val _state = MutableStateFlow(
         LoginState(
             server = serverStorage.server,
@@ -62,10 +64,8 @@ class LoginViewModel(
     init {
         viewModelScope.launch {
             gitHubOAuthCallbackManager.pendingCode.collect { code ->
-                val server = _state.value.server.trim()
-                if (server.isNotBlank()) {
-                    loginWithGitHub(server, code)
-                }
+                val server = pendingGitHubServer ?: return@collect
+                loginWithGitHub(server, code)
             }
         }
     }
@@ -84,6 +84,7 @@ class LoginViewModel(
             return
         }
 
+        pendingGitHubServer = server
         val authUrl = GitHubOAuthUrlGenerator.buildUrl(clientId)
         viewModelScope.launch {
             _gitHubAuthUrl.send(authUrl)

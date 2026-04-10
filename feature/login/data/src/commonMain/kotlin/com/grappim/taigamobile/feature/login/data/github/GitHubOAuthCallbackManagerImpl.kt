@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [GitHubOAuthCallbackManager::class])
 class GitHubOAuthCallbackManagerImpl : GitHubOAuthCallbackManager {
 
-    private val _pendingCode = Channel<String>(capacity = Channel.BUFFERED)
+    private val _pendingCode = Channel<String>(capacity = Channel.CONFLATED)
     override val pendingCode: Flow<String> = _pendingCode.receiveAsFlow()
 
     override fun onCallbackReceived(code: String) {

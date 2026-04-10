@@ -63,6 +63,7 @@ import com.grappim.taigamobile.uikit.utils.PreviewTaigaDarkLight
 import com.grappim.taigamobile.uikit.utils.RDrawable
 import com.grappim.taigamobile.uikit.widgets.dialog.ConfirmActionDialog
 import com.grappim.taigamobile.utils.ui.NativeText
+import com.grappim.taigamobile.utils.ui.ObserveAsEvents
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -88,10 +89,8 @@ fun LoginScreen(
             onLoginSuccess()
         }
     }
-    LaunchedEffect(Unit) {
-        viewModel.gitHubAuthUrl.collect { url ->
-            uriHandler.openUri(url)
-        }
+    ObserveAsEvents(viewModel.gitHubAuthUrl) { url ->
+        uriHandler.openUri(url)
     }
 
     ConfirmActionDialog(

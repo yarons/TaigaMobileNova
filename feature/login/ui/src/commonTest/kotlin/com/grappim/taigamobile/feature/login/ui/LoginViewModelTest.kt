@@ -261,6 +261,11 @@ internal class LoginViewModelTest {
     @Test
     fun `on github callback received login succeeds`() = runTest {
         sut.state.value.onServerValueChange(correctServer)
+        // Initiate GitHub login to set the pending server
+        sut.gitHubAuthUrl.test {
+            sut.state.value.onGitHubLogin()
+            awaitItem() // consume the auth URL
+        }
 
         sut.loginSuccessful.test {
             gitHubOAuthCallbackManager.emitCode("test_code")
