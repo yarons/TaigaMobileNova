@@ -19,6 +19,9 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.BOOLEAN, "IS_FDROID", "false")
         buildConfigField(FieldSpec.Type.STRING, "DEBUG_LOCAL_HOST", "")
         buildConfigField(FieldSpec.Type.STRING, "BUILD_TYPE", "release")
+        val githubClientId = System.getenv("GITHUB_OAUTH_CLIENT_ID")
+            ?: findProperty("github.oauth.client_id") as String? ?: ""
+        buildConfigField(FieldSpec.Type.STRING, "GITHUB_CLIENT_ID", githubClientId)
     }
 
     defaultConfigs("debug") {

@@ -74,4 +74,47 @@ internal class AuthRepositoryTest {
         val actual = sut.auth(authData)
         assertTrue(actual.isFailure)
     }
+
+    @Test
+    fun `on githubAuth without error then return success`() = runTest {
+        val server = "https://taiga.example.com"
+        val code = getRandomString()
+        val response = AuthResponse(
+            authToken = getRandomString(),
+            refresh = getRandomString(),
+            id = getRandomLong()
+        )
+
+        authApi.githubAuthResult = response
+
+        val actual = sut.githubAuth(server, code)
+
+        val call = authApi.githubAuthCalls.single()
+        assertEquals(code, call.code)
+        assertEquals("github", call.type)
+
+        assertTrue(actual.isSuccess)
+    }
+
+    @Test
+    fun `on githubAuth with error then return failure`() = runTest {
+        val actual = sut.githubAuth(getRandomString(), getRandomString())
+        assertTrue(actual.isFailure)
+    }
+
+    @Test
+    fun `on githubAuth server trailing slash is removed`() = runTest {
+        val server = "https://taiga.example.com/"
+        val code = getRandomString()
+        val response = AuthResponse(
+            authToken = getRandomString(),
+            refresh = getRandomString(),
+            id = getRandomLong()
+        )
+        authApi.githubAuthResult = response
+
+        sut.githubAuth(server, code)
+
+        assertEquals("https://taiga.example.com", serverStorage.server)
+    }
 }

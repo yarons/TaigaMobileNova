@@ -12,6 +12,7 @@ kotlin {
             implementation(projects.core.api)
             implementation(projects.core.storage)
             implementation(projects.core.navigation)
+            implementation(projects.core.appinfoApi)
             implementation(projects.utils.ui)
             implementation(projects.uikit)
 

@@ -52,6 +52,9 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
                         val debugLocalHost = findProperty("debug.local.host") as String? ?: ""
                         buildConfigField("String", "DEBUG_LOCAL_HOST", "\"$debugLocalHost\"")
+                        val githubClientId = System.getenv("GITHUB_OAUTH_CLIENT_ID")
+                            ?: findProperty("github.oauth.client_id") as String? ?: ""
+                        buildConfigField("String", "GITHUB_CLIENT_ID", "\"$githubClientId\"")
                     }
                     release {
                         applicationIdSuffix = AppBuildTypes.RELEASE.applicationIdSuffix
@@ -67,6 +70,9 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                         )
 
                         buildConfigField("String", "DEBUG_LOCAL_HOST", "\"\"")
+                        val githubClientId = System.getenv("GITHUB_OAUTH_CLIENT_ID")
+                            ?: findProperty("github.oauth.client_id") as String? ?: ""
+                        buildConfigField("String", "GITHUB_CLIENT_ID", "\"$githubClientId\"")
                     }
                 }
 

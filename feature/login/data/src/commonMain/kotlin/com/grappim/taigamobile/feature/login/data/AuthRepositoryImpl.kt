@@ -8,6 +8,7 @@ import com.grappim.taigamobile.core.storage.server.ServerStorage
 import com.grappim.taigamobile.feature.login.domain.model.AuthData
 import com.grappim.taigamobile.feature.login.domain.repo.AuthRepository
 import com.grappim.taigamobile.feature.login.dto.AuthRequest
+import com.grappim.taigamobile.feature.login.dto.GitHubAuthRequest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
@@ -32,6 +33,19 @@ class AuthRepositoryImpl(
                     type = authData.authType.value
                 )
             )
+            authStorage.setAuthCredentials(
+                token = response.authToken,
+                refreshToken = response.refresh
+            )
+            taigaSessionStorage.setUserId(response.id)
+        }
+    }
+
+    override suspend fun githubAuth(taigaServer: String, code: String): Result<Unit> = resultOf {
+        withContext(dispatcher) {
+            val server = taigaServer.removeTrailingSlashes()
+            serverStorage.defineServer(server)
+            val response = authApi.githubAuth(GitHubAuthRequest(code = code))
             authStorage.setAuthCredentials(
                 token = response.authToken,
                 refreshToken = response.refresh
