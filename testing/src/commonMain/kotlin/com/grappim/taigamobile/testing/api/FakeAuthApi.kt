@@ -3,6 +3,7 @@ package com.grappim.taigamobile.testing.api
 import com.grappim.taigamobile.feature.login.data.AuthApi
 import com.grappim.taigamobile.feature.login.dto.AuthRequest
 import com.grappim.taigamobile.feature.login.dto.AuthResponse
+import com.grappim.taigamobile.feature.login.dto.GitHubAuthRequest
 import com.grappim.taigamobile.feature.login.dto.RefreshTokenRequest
 import com.grappim.taigamobile.feature.login.dto.RefreshTokenResponse
 
@@ -13,6 +14,9 @@ class FakeAuthApi : AuthApi {
     var refreshResult: RefreshTokenResponse? = null
     var refreshCalls = mutableListOf<RefreshTokenRequest>()
 
+    var githubAuthResult: AuthResponse? = null
+    var githubAuthCalls = mutableListOf<GitHubAuthRequest>()
+
     override suspend fun auth(authRequest: AuthRequest): AuthResponse {
         authCalls += authRequest
         return authResult ?: error("authResult not set")
@@ -21,5 +25,10 @@ class FakeAuthApi : AuthApi {
     override suspend fun refresh(request: RefreshTokenRequest): RefreshTokenResponse {
         refreshCalls += request
         return refreshResult ?: error("refreshResult not set")
+    }
+
+    override suspend fun githubAuth(request: GitHubAuthRequest): AuthResponse {
+        githubAuthCalls += request
+        return githubAuthResult ?: error("githubAuthResult not set")
     }
 }

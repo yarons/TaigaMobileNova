@@ -84,5 +84,85 @@ iOS and Desktop builds are functional but distribution channels are not yet set 
 ./gradlew :composeApp:linkReleaseFrameworkIosArm64
 ```
 
+## GitHub OAuth Authentication
+
+TaigaMobileNova supports logging in with GitHub for Taiga instances that have GitHub OAuth configured on the server side.
+
+### How It Works
+
+1. The user enters the Taiga server URL and taps **Continue with GitHub**.
+2. The app validates the server URL and opens the GitHub OAuth authorization page in the system browser.
+3. After the user grants access on GitHub, the browser redirects to `taigamobile://github-callback?code=<CODE>`.
+4. The app receives this callback, extracts the code, and sends it to the Taiga API (`POST /api/v1/auth` with `type=github`).
+5. On success, the user is logged in and the auth tokens are stored securely.
+
+### Prerequisites
+
+Before GitHub login works, you need to:
+
+1. **Create a GitHub OAuth app** (one app per Taiga installation):
+   - Go to [GitHub → Settings → Developer settings → OAuth Apps → New OAuth App](https://github.com/settings/applications/new)
+   - Set **Homepage URL** to your Taiga server URL (e.g., `https://taiga.example.com`)
+   - Set **Authorization callback URL** to `taigamobile://github-callback`
+   - Note the **Client ID** (the Client Secret stays on the Taiga server)
+
+2. **Configure your Taiga server** to use this GitHub OAuth app (add `GITHUB_API_CLIENT_ID` and `GITHUB_API_CLIENT_SECRET` to your Taiga settings).
+
+3. **Build the mobile app** with the GitHub Client ID:
+
+### Required Environment Variables
+
+| Variable | Description |
+|---|---|
+| `GITHUB_OAUTH_CLIENT_ID` | The GitHub OAuth App Client ID for your Taiga instance |
+
+### Setting the Client ID
+
+**For local development**, add to `local.properties`:
+```properties
+github.oauth.client_id=your_github_oauth_client_id_here
+```
+
+**For CI/CD (GitHub Actions)**, add a repository secret:
+- Go to your repository → **Settings → Secrets and variables → Actions**
+- Add a secret named `GITHUB_OAUTH_CLIENT_ID` with the value of your GitHub OAuth App Client ID
+
+Then reference it in your workflow:
+```yaml
+env:
+  GITHUB_OAUTH_CLIENT_ID: ${{ secrets.GITHUB_OAUTH_CLIENT_ID }}
+```
+
+### Platform Support
+
+| Platform | Deep-link Handling |
+|---|---|
+| Android | Handled via `taigamobile://github-callback` intent-filter in `AndroidManifest.xml` |
+| iOS | Register `taigamobile` as a URL scheme in `Info.plist` (see note below) |
+| Desktop (JVM) | The system browser will open; manual code paste is not yet supported |
+
+> **iOS Note:** To enable the deep link callback on iOS, add the following to `iosApp/Info.plist`:
+> ```xml
+> <key>CFBundleURLTypes</key>
+> <array>
+>   <dict>
+>     <key>CFBundleURLSchemes</key>
+>     <array>
+>       <string>taigamobile</string>
+>     </array>
+>   </dict>
+> </array>
+> ```
+
+### Notes for the Repository Owner
+
+To enable GitHub OAuth in CI/CD and in the published builds, please:
+
+1. Create a GitHub OAuth App as described above, with callback URL `taigamobile://github-callback`.
+2. Add the `GITHUB_OAUTH_CLIENT_ID` secret to this repository's GitHub Actions secrets.
+3. Update your Taiga server configuration with the same GitHub OAuth app credentials.
+
+If `GITHUB_OAUTH_CLIENT_ID` is not set at build time, the "Continue with GitHub" button will show an error message when tapped — no build failure will occur.
+
 ## About
 This project is a complete rewrite of the [original TaigaMobile app](https://github.com/EugeneTheDev/TaigaMobile) (now archived), rebuilt from scratch with Kotlin Multiplatform, Compose Multiplatform, and modern architecture.

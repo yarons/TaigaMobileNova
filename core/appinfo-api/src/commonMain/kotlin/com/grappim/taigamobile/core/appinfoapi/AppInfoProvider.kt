@@ -7,4 +7,5 @@ interface AppInfoProvider {
     fun getVersionName(): String
     fun getDebugLocalHost(): String
     fun getBuildType(): String
+    fun getGitHubClientId(): String
 }

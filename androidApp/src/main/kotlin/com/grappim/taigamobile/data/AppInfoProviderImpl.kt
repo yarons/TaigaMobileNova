@@ -18,4 +18,6 @@ class AppInfoProviderImpl : AppInfoProvider {
     override fun getDebugLocalHost(): String = BuildConfig.DEBUG_LOCAL_HOST
 
     override fun getBuildType(): String = BuildConfig.BUILD_TYPE
+
+    override fun getGitHubClientId(): String = BuildConfig.GITHUB_CLIENT_ID
 }

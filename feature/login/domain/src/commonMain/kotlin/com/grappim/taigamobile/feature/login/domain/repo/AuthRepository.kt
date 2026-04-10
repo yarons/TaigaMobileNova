@@ -4,4 +4,5 @@ import com.grappim.taigamobile.feature.login.domain.model.AuthData
 
 interface AuthRepository {
     suspend fun auth(authData: AuthData): Result<Unit>
+    suspend fun githubAuth(taigaServer: String, code: String): Result<Unit>
 }
