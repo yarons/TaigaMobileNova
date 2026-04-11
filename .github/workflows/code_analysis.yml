@@ -31,6 +31,7 @@ jobs:
         TAIGA_STORE_PASS_D: ${{ secrets.TAIGA_STORE_PASS_D }}
         TAIGA_ALIAS_D: ${{ secrets.TAIGA_ALIAS_D }}
         ENCODED_STRING_D: ${{ secrets.TAIGA_KEYSTORE_D }}
+        GITHUB_OAUTH_CLIENT_ID: ${{ secrets.GITHUB_OAUTH_CLIENT_ID }}
 
     steps:
       - name: Check out the repo
